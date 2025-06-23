@@ -1,16 +1,47 @@
-# stepify
+# Stepify 👟
 
-A new Flutter project.
+**Stepify** is a modern and stylish Flutter-based mobile application for browsing, buying, and managing sneakers. It features a clean UI, user authentication, product filtering, and Firebase backend integration.
 
-## Getting Started
+## ✨ Features
 
-This project is a starting point for a Flutter application.
+- 🔐 User Authentication (Login/Register with Firebase)
+- 🏠 Home Screen with Categories & Featured Sneakers
+- 🔍 Search Functionality
+- 🛒 Add to Cart & Checkout Flow (coming soon)
+- 📦 Product Details with multiple images, sizes, colors
+- 🧾 Order History (planned)
+- 🧑‍💼 User Profile Management
+- ☁️ Cloudinary Image Hosting
+- 📊 Rating System
+- 🌐 Multi-language Support
+- 🔔 Real-time Notifications (planned)
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠️ Tech Stack
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Flutter** – Frontend framework
+- **Firebase Auth & Firestore** – User auth & database
+- **Cloudinary** – Image hosting
+- **Provider / Bloc / Cubit** – State Management (based on your setup)
+- **ScreenUtil** – Responsive UI
+- **Google Fonts** – Custom typography
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📱 Screens Overview
+
+| Screen               | Description                               |
+|----------------------|-------------------------------------------|
+| Splash Screen        | App logo and loading indicator            |
+| Onboarding Screens   | Intro to Stepify features                 |
+| Login / Register     | User authentication via Firebase          |
+| Home Screen          | Categories, featured products             |
+| Product Details      | View shoe info, sizes, images, rating     |
+| Search Screen        | Find shoes based on name/tags             |
+| Cart Screen          | Selected items and total price (optional) |
+| Profile Screen       | View/update user info                     |
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/your-username/stepify.git
+cd stepify
+flutter pub get
+flutter run
