@@ -1,10 +1,23 @@
 import 'dart:async';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/feature/cart/ui/screen/cart_screen.dart';
 import 'package:stepify/feature/favorite/ui/screen/favorite_screen.dart';
+import 'package:stepify/feature/home/data/datasources/category_remote_data_source.dart';
+import 'package:stepify/feature/home/data/datasources/offer_remote_data_source.dart';
+import 'package:stepify/feature/home/data/repositories/category_repository_impl.dart';
+import 'package:stepify/feature/home/data/repositories/offer_repository_impl.dart';
+import 'package:stepify/feature/home/data/repositories/product_repository_impl.dart';
+import 'package:stepify/feature/home/domain/usecases/get_categories.dart';
+import 'package:stepify/feature/home/domain/usecases/get_offers.dart';
+import 'package:stepify/feature/home/domain/usecases/get_products.dart';
+import 'package:stepify/feature/home/ui/cubit/category_cubit.dart';
+import 'package:stepify/feature/home/ui/cubit/offer_cubit.dart';
+import 'package:stepify/feature/home/ui/cubit/product_cubit.dart';
 import 'package:stepify/feature/home/ui/screen/home_screen.dart';
 import 'package:stepify/feature/notification/ui/screen/notifications_screen.dart';
 import 'package:stepify/feature/profile/show_profile/screen/profile_screen.dart';
@@ -29,12 +42,31 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   late CurvedAnimation borderRadiusCurve;
   late AnimationController _hideBottomBarAnimationController;
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const FavoriteScreen(),
-    const NotificationScreen(),
-    const ProfileScreen()
-  ];
+final List<Widget> _screens = [
+ MultiBlocProvider(
+  providers: [
+    BlocProvider(
+      create: (context) => ProductCubit(
+        GetProducts(ProductRepositoryImpl(FirebaseFirestore.instance)),
+      )..fetchProducts(),
+    ),
+    BlocProvider(
+      create: (context) => CategoryCubit(
+        GetCategories(CategoryRepositoryImpl(CategoryRemoteDataSourceImpl(FirebaseFirestore.instance))),
+      )..fetchCategories(),
+    ),
+    BlocProvider(
+      create: (context) => OfferCubit(
+        GetOffers(OfferRepositoryImpl(OfferRemoteDataSourceImpl(FirebaseFirestore.instance))),
+      )..fetchOffers(),
+    ),
+  ],
+  child: const HomeScreen(),
+),
+  const FavoriteScreen(),
+  const NotificationScreen(),
+  const ProfileScreen()
+];
   final iconList = <IconData>[
     Icons.home_filled,
     Icons.favorite,

@@ -1,10 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stepify/feature/home/domain/entities/product_entity.dart';
 import 'package:stepify/feature/home/ui/widgets/shoe_card.dart';
 
 class PopularShoesSection extends StatelessWidget {
-  final List<Map<String, String>> popularShoes;
+  final List<ProductEntity> popularShoes;
 
   const PopularShoesSection({super.key, required this.popularShoes});
 
@@ -24,9 +25,7 @@ class PopularShoesSection extends StatelessWidget {
                   right: index == popularShoes.length - 1 ? 0 : 10,
                 ),
                 child: ShoeCard(
-                  name: shoe["name"]!,
-                  price: shoe["price"]!,
-                  imageUrl: shoe["imageUrl"]!,
+                  product: shoe,
                 ),
               );
             },

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stepify/core/themes/colors.dart';
+import 'package:stepify/feature/home/domain/entities/product_entity.dart';
+
 import 'package:stepify/feature/product/ui/screen/product_screen.dart';
 
 class ShoeCard extends StatefulWidget {
-  final String name;
-  final String price;
-  final String imageUrl;
+  final ProductEntity product;
 
   const ShoeCard({
     super.key,
-    required this.name,
-    required this.price,
-    required this.imageUrl,
+    required this.product,
   });
 
   @override
@@ -34,7 +32,7 @@ class _ShoeCardState extends State<ShoeCard> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const ProductScreen(),
+            builder: (context) => ProductScreen(product: widget.product),
           ),
         );
       },
@@ -64,7 +62,11 @@ class _ShoeCardState extends State<ShoeCard> {
               height: 80.h,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(widget.imageUrl),
+                  image: NetworkImage(
+                    widget.product.colorImages.isNotEmpty
+                        ? widget.product.colorImages.first.imageUrl
+                        : "https://via.placeholder.com/150",
+                  ),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -76,11 +78,11 @@ class _ShoeCardState extends State<ShoeCard> {
                       fontWeight: FontWeight.w500,
                       fontSize: 12,
                     )),
-            Text(widget.name,
+            Text(widget.product.name,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: const Color(0xFF6A6A6A),
                     )),
-            Text(widget.price,
+            Text("\$${widget.product.price.toStringAsFixed(2)}",
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,

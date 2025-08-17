@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/core/utils/widget/bag_widget.dart';
+import 'package:stepify/feature/home/domain/entities/product_entity.dart';
 
 class ProductScreen extends StatefulWidget {
-  const ProductScreen({super.key});
+  final ProductEntity product;
+
+  const ProductScreen({super.key, required this.product});
 
   @override
   State<ProductScreen> createState() => _ProductScreenState();
@@ -15,6 +18,8 @@ class _ProductScreenState extends State<ProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final product = widget.product;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
@@ -25,26 +30,10 @@ class _ProductScreenState extends State<ProductScreen> {
         surfaceTintColor: Colors.white,
         centerTitle: true,
         actions: const [BagWidget()],
-        leading: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsManager.secondaryColor,
-                  shape: const CircleBorder(),
-                  fixedSize: Size(30.w, 30.w),
-                ),
-                icon: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: ColorsManager.textColor,
-                  size: 16,
-                ),
-              )
-            ],
-          ),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: ColorsManager.textColor, size: 18),
         ),
       ),
       body: CustomScrollView(
@@ -53,11 +42,11 @@ class _ProductScreenState extends State<ProductScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                _buildProductHeader(),
+                _buildProductHeader(product),
                 const SizedBox(height: 10),
-                const ShoeSliderWidget(),
+                ShoeSliderWidget(images: product.colorImages.map((e) => e.imageUrl).toList(), price: product.price),
                 const SizedBox(height: 32),
-                _buildProductDescription(),
+                _buildProductDescription(product.description),
               ]),
             ),
           ),
@@ -90,15 +79,13 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                     elevation: 0,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    // TODO: Add to cart logic
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.shopping_bag_outlined,
-                        size: 17,
-                      ),
+                      const Icon(Icons.shopping_bag_outlined, size: 17),
                       const SizedBox(width: 10),
                       Text(
                         'Add to Cart',
@@ -121,7 +108,7 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-  Widget _buildProductHeader() {
+  Widget _buildProductHeader(ProductEntity product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -129,13 +116,13 @@ class _ProductScreenState extends State<ProductScreen> {
         SizedBox(
           width: 200.w,
           child: Text(
-            'Nike Air Max 270 Essential',
+            product.name,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         const SizedBox(height: 10),
         Text(
-          'Men\'s Shoes',
+          product.category,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -146,14 +133,12 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-  Widget _buildProductDescription() {
+  Widget _buildProductDescription(String description) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'The Men Air 270 Unit delivers unmatched, all-day comfort. '
-          'The bold, running-inspired design roots you to everything Nike. '
-          'Featuring our largest Max Air unit yet for incredible cushioning.',
+          description,
           maxLines: _isDescriptionExpanded ? 10 : 3,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
@@ -177,75 +162,19 @@ class _ProductScreenState extends State<ProductScreen> {
       ],
     );
   }
-
-  Widget _buildAddToCartButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.favorite_border_outlined),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            shape: const CircleBorder(),
-            fixedSize: Size(50.w, 50.w),
-          ),
-        ),
-        const SizedBox(width: 10),
-        SizedBox(
-          width: 250.w,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              elevation: 0,
-            ),
-            onPressed: () {},
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.shopping_cart_outlined),
-                const SizedBox(width: 10),
-                const Text(
-                  'Add to Cart',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.1,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class ShoeSliderWidget extends StatefulWidget {
-  const ShoeSliderWidget({super.key});
+  final List<String> images;
+  final double price;
+
+  const ShoeSliderWidget({super.key, required this.images, required this.price});
 
   @override
   State<ShoeSliderWidget> createState() => _ShoeSliderWidgetState();
 }
 
 class _ShoeSliderWidgetState extends State<ShoeSliderWidget> {
-  final List<String> shoeImages = [
-    'assets/products_images/product2.png',
-    'assets/products_images/product3.png',
-    'assets/products_images/product4.png',
-    'assets/products_images/product5.png',
-    'assets/products_images/product6.png',
-    'assets/products_images/product4.png',
-    'assets/products_images/product5.png',
-    'assets/products_images/product6.png',
-  ];
-
   int selectedIndex = 0;
   PageController pageController = PageController();
 
@@ -256,7 +185,7 @@ class _ShoeSliderWidgetState extends State<ShoeSliderWidget> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            '\$179.39',
+            '\$${widget.price.toStringAsFixed(2)}',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
@@ -269,7 +198,7 @@ class _ShoeSliderWidgetState extends State<ShoeSliderWidget> {
           height: 220,
           child: PageView.builder(
             controller: pageController,
-            itemCount: shoeImages.length,
+            itemCount: widget.images.length,
             onPageChanged: (index) {
               setState(() {
                 selectedIndex = index;
@@ -277,8 +206,8 @@ class _ShoeSliderWidgetState extends State<ShoeSliderWidget> {
             },
             itemBuilder: (context, index) {
               return Center(
-                child: Image.asset(
-                  shoeImages[index],
+                child: Image.network(
+                  widget.images[index],
                   height: 150,
                   fit: BoxFit.contain,
                 ),
@@ -294,7 +223,7 @@ class _ShoeSliderWidgetState extends State<ShoeSliderWidget> {
           height: 70,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: shoeImages.length,
+            itemCount: widget.images.length,
             separatorBuilder: (_, __) => const SizedBox(width: 10),
             itemBuilder: (context, index) {
               final isSelected = index == selectedIndex;
@@ -318,8 +247,8 @@ class _ShoeSliderWidgetState extends State<ShoeSliderWidget> {
                         : null,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Image.asset(
-                    shoeImages[index],
+                  child: Image.network(
+                    widget.images[index],
                     height: 50,
                     width: 50,
                     fit: BoxFit.cover,
@@ -338,13 +267,13 @@ class ArcBasePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.grey.shade300 // لون القاعدة
+      ..color = Colors.grey.shade300
       ..style = PaintingStyle.fill;
 
     final rect = Rect.fromCenter(
-      center: Offset(size.width / 2, 0), // مركز القاعدة
-      width: size.width * 1, // العرض البيضاوي
-      height: size.height, // ارتفاع كبير لإعطاء عمق 3D
+      center: Offset(size.width / 2, 0),
+      width: size.width * 1,
+      height: size.height,
     );
 
     final path = Path()..addOval(rect);

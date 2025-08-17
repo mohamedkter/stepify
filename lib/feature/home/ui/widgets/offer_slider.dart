@@ -1,10 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:stepify/feature/home/models/offer_model.dart';
+import 'package:stepify/feature/home/domain/entities/offer_entity.dart';
+
 
 class OfferSlider extends StatefulWidget {
-  final List<OfferModel> offers;
+  final List<OfferEntity> offers;
 
   const OfferSlider({super.key, required this.offers});
 
@@ -31,7 +32,7 @@ class _OfferSliderState extends State<OfferSlider> {
                     (e) => SizedBox(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(e.imageUrl,
+                        child: Image.network(e.imageUrl,
                             fit: BoxFit.cover, width: double.infinity),
                       ),
                     ),
@@ -64,8 +65,8 @@ class _OfferSliderState extends State<OfferSlider> {
                     position: double.parse(currentIndex.toString()),
                     dotsCount: widget.offers.length,
                     decorator:  DotsDecorator(
-                        size: Size.square(7.0),
-                        activeSize: Size(8.0, 8.0),
+                        size: const Size.square(7.0),
+                        activeSize: const Size(8.0, 8.0),
                         color: Colors.grey,
                         activeColor:Theme.of(context).primaryColor),
                   ),

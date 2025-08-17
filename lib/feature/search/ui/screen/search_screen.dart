@@ -278,26 +278,26 @@ class _SearchScreenState extends State<SearchScreen> {
             SizedBox(height: 20.h),
             const SectionTitle(title: "Popular Results"),
             SizedBox(height: 10.h),
-            Expanded(
-              child: GridView.builder(
-                padding: EdgeInsets.only(top: 8.h),
-                itemCount: searchResults.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16.h,
-                  crossAxisSpacing: 16.w,
-                  childAspectRatio: 0.7,
-                ),
-                itemBuilder: (context, index) {
-                  final shoe = searchResults[index];
-                  return ShoeCard(
-                    imageUrl: shoe["imageUrl"]!,
-                    name: shoe["name"]!,
-                    price: shoe["price"]!,
-                  );
-                },
-              ),
-            )
+            // Expanded(
+            //   child: GridView.builder(
+            //     padding: EdgeInsets.only(top: 8.h),
+            //     itemCount: searchResults.length,
+            //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            //       crossAxisCount: 2,
+            //       mainAxisSpacing: 16.h,
+            //       crossAxisSpacing: 16.w,
+            //       childAspectRatio: 0.7,
+            //     ),
+            //     itemBuilder: (context, index) {
+            //       final shoe = searchResults[index];
+            //       return ShoeCard(
+            //         imageUrl: shoe["imageUrl"]!,
+            //         name: shoe["name"]!,
+            //         price: shoe["price"]!,
+            //       );
+            //     },
+            //   ),
+            // )
           ],
         ),
       ),
