@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/core/utils/widget/bag_widget.dart';
+import 'package:stepify/feature/cart/domain/entities/cart_item.dart';
+import 'package:stepify/feature/cart/ui/cubit/cart_cubit.dart';
+import 'package:stepify/feature/favorite/domain/entities/favorite_item.dart';
+import 'package:stepify/feature/favorite/ui/cubit/favorites_cubit.dart';
+import 'package:stepify/feature/favorite/ui/cubit/favorites_state.dart';
 import 'package:stepify/feature/home/domain/entities/product_entity.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -44,7 +50,9 @@ class _ProductScreenState extends State<ProductScreen> {
               delegate: SliverChildListDelegate([
                 _buildProductHeader(product),
                 const SizedBox(height: 10),
-                ShoeSliderWidget(images: product.colorImages.map((e) => e.imageUrl).toList(), price: product.price),
+                ShoeSliderWidget(
+                    images: product.colorImages.map((e) => e.imageUrl).toList(),
+                    price: product.price),
                 const SizedBox(height: 32),
                 _buildProductDescription(product.description),
               ]),
@@ -57,14 +65,36 @@ class _ProductScreenState extends State<ProductScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.favorite_border_outlined),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF9F9F9),
-                  shape: const CircleBorder(),
-                  fixedSize: Size(50.w, 50.w),
-                ),
+              BlocBuilder<FavoritesCubit, FavoritesState>(
+                builder: (context, state) {
+                  bool isFav = false;
+                  if (state is FavoritesUpdated) {
+                    isFav = state.items.any((i) => i.productId == product.id);
+                  }
+
+                  return IconButton(
+                    onPressed: () {
+                      final item = FavoriteItem(
+                        productId: product.id,
+                        name: product.name,
+                        imageUrl: product.colorImages.isNotEmpty
+                            ? product.colorImages.first.imageUrl
+                            : "",
+                        price: product.price,
+                      );
+                      context.read<FavoritesCubit>().toggleFavorite(item);
+                    },
+                    icon: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border_outlined,
+                      color: isFav ? Colors.red : Colors.grey,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFF9F9F9),
+                      shape: const CircleBorder(),
+                      fixedSize: Size(50.w, 50.w),
+                    ),
+                  );
+                },
               ),
               const SizedBox(width: 10),
               SizedBox(
@@ -80,7 +110,22 @@ class _ProductScreenState extends State<ProductScreen> {
                     elevation: 0,
                   ),
                   onPressed: () {
-                    // TODO: Add to cart logic
+                    final p = widget.product;
+                    context.read<CartCubit>().addToCart(
+                          CartItem(
+                            productId: p.id,
+                            name: p.name,
+                            price: p.price,
+                            quantity: 1,
+                            imageUrl: p.colorImages.isNotEmpty
+                                ? p.colorImages.first.imageUrl
+                                : "",
+                          ),
+                        );
+                    // Optional: Snackbar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Added to cart')),
+                    );
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -168,7 +213,8 @@ class ShoeSliderWidget extends StatefulWidget {
   final List<String> images;
   final double price;
 
-  const ShoeSliderWidget({super.key, required this.images, required this.price});
+  const ShoeSliderWidget(
+      {super.key, required this.images, required this.price});
 
   @override
   State<ShoeSliderWidget> createState() => _ShoeSliderWidgetState();

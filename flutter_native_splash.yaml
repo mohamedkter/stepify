@@ -1,9 +1,9 @@
 flutter_native_splash:
   color: "#1383c2"
-  image: assets/images/NikeLogo.png
+  image: assets/images/stepify_logo.png
   android_12:
   # size of the image 960x960 and logo size 640 x 640
-    image: assets/images/NikeLogo.png
+    image: assets/images/stepify_logo.png
     color: "#1383c2"
     icon_background_color: "#1383c2"
   fullscreen: true

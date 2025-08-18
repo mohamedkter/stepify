@@ -1,65 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/core/utils/widget/bag_widget.dart';
+import 'package:stepify/feature/favorite/domain/entities/favorite_item.dart';
+import 'package:stepify/feature/favorite/ui/cubit/favorites_cubit.dart';
+import 'package:stepify/feature/favorite/ui/cubit/favorites_state.dart';
 
 class FavoriteScreen extends StatelessWidget {
   const FavoriteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const shoesImages = [
-      "assets/products_images/product1.png",
-      "assets/products_images/product2.png",
-      "assets/products_images/product3.png",
-      "assets/products_images/product4.png",
-      "assets/products_images/product1.png",
-      "assets/products_images/product2.png",
-      "assets/products_images/product3.png",
-      "assets/products_images/product4.png",
-    ];
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
-      appBar: AppBar(
-        title: Text("Favorite", style: Theme.of(context).textTheme.bodyLarge),
-         backgroundColor:ColorsManager.secondaryColor,
-        elevation: 0,
-        surfaceTintColor: Colors.white,
-        centerTitle: true,
-        actions: const [BagWidget()],
-        leading: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 0.w),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsManager.secondaryColor,
-                  shape: const CircleBorder(),
-                  fixedSize: Size(30.w, 30.w),
-                ),
-                icon: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: ColorsManager.textColor,
-                  size: 16.sp,
-                ),
-              )
-            ],
+        backgroundColor: const Color(0xFFF9F9F9),
+        appBar: AppBar(
+          title: Text("Favorite", style: Theme.of(context).textTheme.bodyLarge),
+          backgroundColor: ColorsManager.secondaryColor,
+          elevation: 0,
+          surfaceTintColor: Colors.white,
+          centerTitle: true,
+          actions: const [BagWidget()],
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: ColorsManager.textColor,
+              size: 16.sp,
+            ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20.h),
-              GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: shoesImages.length,
+        body: BlocBuilder<FavoritesCubit, FavoritesState>(
+          builder: (context, state) {
+            if (state is FavoritesLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is FavoritesUpdated) {
+              if (state.items.isEmpty) {
+                return const Center(child: Text("No favorites yet"));
+              }
+
+              return GridView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                itemCount: state.items.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 10.h,
@@ -67,146 +49,83 @@ class FavoriteScreen extends StatelessWidget {
                   childAspectRatio: 0.7,
                 ),
                 itemBuilder: (context, index) {
-                  return FavoriteShoeCard(
-                    name: "Nike Air Max",
-                    price: "\$150.2",
-                    imageUrl: shoesImages[index],
-                  );
+                  final item = state.items[index];
+                  return FavoriteShoeCard(item: item);
                 },
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+              );
+            } else if (state is FavoritesFailure) {
+              return Center(child: Text(state.message));
+            }
+
+            return const SizedBox();
+          },
+        ));
   }
 }
 
-class FavoriteShoeCard extends StatefulWidget {
-  final String name;
-  final String price;
-  final String imageUrl;
+class FavoriteShoeCard extends StatelessWidget {
+  final FavoriteItem item;
 
-  const FavoriteShoeCard({
-    super.key,
-    required this.name,
-    required this.price,
-    required this.imageUrl,
-  });
-
-  @override
-  State<FavoriteShoeCard> createState() => _FavoriteShoeCardState();
-}
-
-class _FavoriteShoeCardState extends State<FavoriteShoeCard> {
-  bool isFavorite = false;
-
-  void toggleFavorite() {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-  }
+  const FavoriteShoeCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        padding: EdgeInsets.all(10.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            InkWell(
-              onTap: toggleFavorite,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: CircleAvatar(
-                  backgroundColor: const Color(0xFFF9F9F9),
-                  radius: 15.r,
-                  child: Icon(
-                    Icons.favorite,
-                    size: 17.sp,
-                    color: ColorsManager.errorColor,
-                  ),
+    final favoritesCubit = context.read<FavoritesCubit>();
+
+    return Container(
+      padding: EdgeInsets.all(10.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18.r),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () {
+              favoritesCubit.toggleFavorite(item); // ✅ تحكم بالمفضلة من الكيوبت
+            },
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: CircleAvatar(
+                backgroundColor: const Color(0xFFF9F9F9),
+                radius: 15.r,
+                child: Icon(
+                  Icons.favorite,
+                  size: 17.sp,
+                  color: ColorsManager.errorColor,
                 ),
               ),
             ),
-            Container(
-              width: 150.w,
-              height: 80.h,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(widget.imageUrl),
-                  fit: BoxFit.cover,
-                ),
+          ),
+          Container(
+            width: 150.w,
+            height: 80.h,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(item.imageUrl),
+                fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 8.h),
-            Text(
-              "BEST SELLER",
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12.sp,
-                  ),
-            ),
-            Text(
-              widget.name,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF6A6A6A),
-                    fontSize: 14.sp,
-                  ),
-            ),
-            SizedBox(height: 10.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.price,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14.sp,
-                      ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            item.name,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: const Color(0xFF6A6A6A),
+                  fontSize: 14.sp,
                 ),
-                Row(
-                  children: [
-                    Container(
-                      width: 15.w,
-                      height: 15.h,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    SizedBox(width: 5.w),
-                    Container(
-                      width: 10.w,
-                      height: 10.h,
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    SizedBox(width: 5.w),
-                    Container(
-                      width: 13.w,
-                      height: 13.h,
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            "\$${item.price}",
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.sp,
                 ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stepify/core/themes/colors.dart';
+import 'package:stepify/feature/cart/ui/cubit/cart_cubit.dart';
 import 'package:stepify/feature/cart/ui/screen/cart_screen.dart';
 import 'package:stepify/feature/favorite/ui/screen/favorite_screen.dart';
 import 'package:stepify/feature/home/data/datasources/category_remote_data_source.dart';
@@ -22,8 +23,6 @@ import 'package:stepify/feature/home/ui/screen/home_screen.dart';
 import 'package:stepify/feature/notification/ui/screen/notifications_screen.dart';
 import 'package:stepify/feature/profile/show_profile/screen/profile_screen.dart';
 
-
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -32,111 +31,104 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
-  var _bottomNavIndex = 0; //default index of a first screen
+  int _bottomNavIndex = 0;
 
   late AnimationController _fabAnimationController;
   late AnimationController _borderRadiusAnimationController;
-  late Animation<double> fabAnimation;
-  late Animation<double> borderRadiusAnimation;
-  late CurvedAnimation fabCurve;
-  late CurvedAnimation borderRadiusCurve;
   late AnimationController _hideBottomBarAnimationController;
 
-final List<Widget> _screens = [
- MultiBlocProvider(
-  providers: [
-    BlocProvider(
-      create: (context) => ProductCubit(
-        GetProducts(ProductRepositoryImpl(FirebaseFirestore.instance)),
-      )..fetchProducts(),
-    ),
-    BlocProvider(
-      create: (context) => CategoryCubit(
-        GetCategories(CategoryRepositoryImpl(CategoryRemoteDataSourceImpl(FirebaseFirestore.instance))),
-      )..fetchCategories(),
-    ),
-    BlocProvider(
-      create: (context) => OfferCubit(
-        GetOffers(OfferRepositoryImpl(OfferRemoteDataSourceImpl(FirebaseFirestore.instance))),
-      )..fetchOffers(),
-    ),
-  ],
-  child: const HomeScreen(),
-),
-  const FavoriteScreen(),
-  const NotificationScreen(),
-  const ProfileScreen()
-];
-  final iconList = <IconData>[
+  late Animation<double> fabAnimation;
+  late Animation<double> borderRadiusAnimation;
+
+  final _iconList = const <IconData>[
     Icons.home_filled,
     Icons.favorite,
     Icons.notifications,
     Icons.person,
   ];
-final List<String> titleList = [
+
+  final _titleList = const <String>[
     "Home",
     "Favorite",
     "Notification",
     "Profile",
   ];
+
   @override
   void initState() {
     super.initState();
+    _initAnimations();
+  }
 
-    _fabAnimationController = AnimationController(
-      duration: Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _borderRadiusAnimationController = AnimationController(
-      duration: Duration(milliseconds: 500),
-      vsync: this,
-    );
-    fabCurve = CurvedAnimation(
+  void _initAnimations() {
+    _fabAnimationController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _borderRadiusAnimationController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _hideBottomBarAnimationController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
+
+    final fabCurve = CurvedAnimation(
       parent: _fabAnimationController,
-      curve: Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
+      curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
     );
-    borderRadiusCurve = CurvedAnimation(
+
+    final borderRadiusCurve = CurvedAnimation(
       parent: _borderRadiusAnimationController,
-      curve: Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
+      curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
     );
 
     fabAnimation = Tween<double>(begin: 0, end: 1).animate(fabCurve);
-    borderRadiusAnimation = Tween<double>(begin: 0, end: 1).animate(
-      borderRadiusCurve,
-    );
+    borderRadiusAnimation = Tween<double>(begin: 0, end: 1).animate(borderRadiusCurve);
 
-    _hideBottomBarAnimationController = AnimationController(
-      duration: Duration(milliseconds: 200),
-      vsync: this,
-    );
-
-    Future.delayed(
-      Duration(seconds: 1),
-      () => _fabAnimationController.forward(),
-    );
-    Future.delayed(
-      Duration(seconds: 1),
-      () => _borderRadiusAnimationController.forward(),
-    );
+    // Start animations
+    Future.delayed(const Duration(seconds: 1), () {
+      _fabAnimationController.forward();
+      _borderRadiusAnimationController.forward();
+    });
   }
 
-  bool onScrollNotification(ScrollNotification notification) {
-    if (notification is UserScrollNotification &&
-        notification.metrics.axis == Axis.vertical) {
-      switch (notification.direction) {
-        case ScrollDirection.forward:
-          _hideBottomBarAnimationController.reverse();
-          _fabAnimationController.forward(from: 0);
-          break;
-        case ScrollDirection.reverse:
-          _hideBottomBarAnimationController.forward();
-          _fabAnimationController.reverse(from: 1);
-          break;
-        case ScrollDirection.idle:
-          break;
-      }
-    }
-    return false;
+  List<Widget> get _screens => [
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) =>
+                  ProductCubit(GetProducts(ProductRepositoryImpl(FirebaseFirestore.instance)))
+                    ..fetchProducts(),
+            ),
+            BlocProvider(
+              create: (_) => CategoryCubit(GetCategories(
+                  CategoryRepositoryImpl(CategoryRemoteDataSourceImpl(FirebaseFirestore.instance))))
+                ..fetchCategories(),
+            ),
+            BlocProvider(
+              create: (_) => OfferCubit(GetOffers(
+                  OfferRepositoryImpl(OfferRemoteDataSourceImpl(FirebaseFirestore.instance))))
+                ..fetchOffers(),
+            ),
+          ],
+          child: const HomeScreen(),
+        ),
+        const FavoriteScreen(),
+        const NotificationScreen(),
+        const ProfileScreen(),
+      ];
+
+  void _onFabPressed() {
+    _resetAnimations();
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => BlocProvider.value(
+        value: context.read<CartCubit>(),
+        child: const CartScreen(),
+      ),
+    ));
+  }
+
+  void _resetAnimations() {
+    _fabAnimationController.reset();
+    _borderRadiusAnimationController.reset();
+    _borderRadiusAnimationController.forward();
+    _fabAnimationController.forward();
   }
 
   @override
@@ -145,41 +137,17 @@ final List<String> titleList = [
       extendBody: true,
       body: _screens[_bottomNavIndex],
       floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         backgroundColor: ColorsManager.primaryColor,
-        child: const Icon(
-          Icons.shopping_bag_outlined,
-          size: 30,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          _fabAnimationController.reset();
-          _borderRadiusAnimationController.reset();
-          _borderRadiusAnimationController.forward();
-          _fabAnimationController.forward();
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return const CartScreen();
-          }));
-        },
+        onPressed: _onFabPressed,
+        child: const Icon(Icons.shopping_bag_outlined, size: 30, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
-        itemCount: iconList.length,
+        itemCount: _iconList.length,
         tabBuilder: (int index, bool isActive) {
-          final color = isActive
-              ? ColorsManager.primaryColor
-              : Colors.grey;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                iconList[index],
-                size: 24,
-                color: color,
-              ),
-            ],
-          );
+          final color = isActive ? ColorsManager.primaryColor : Colors.grey;
+          return Icon(_iconList[index], size: 24, color: color);
         },
         backgroundColor: Colors.white,
         activeIndex: _bottomNavIndex,
@@ -194,4 +162,3 @@ final List<String> titleList = [
     );
   }
 }
-

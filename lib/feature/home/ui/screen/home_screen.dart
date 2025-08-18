@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/core/utils/widget/bag_widget.dart';
+import 'package:stepify/feature/cart/ui/screen/cart_screen.dart';
 import 'package:stepify/feature/home/domain/entities/product_entity.dart';
 import 'package:stepify/feature/home/ui/cubit/product_cubit.dart';
 import 'package:stepify/feature/home/ui/cubit/category_cubit.dart';
@@ -56,7 +57,15 @@ class _HomeScreenState extends State<HomeScreen> {
       elevation: 0,
       surfaceTintColor: Colors.white,
       backgroundColor: ColorsManager.secondaryColor,
-      actions: const [BagWidget()],
+      actions: [
+        GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const CartScreen(),
+              ));
+            },
+            child: const BagWidget())
+      ],
     );
   }
 
