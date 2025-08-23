@@ -1,9 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stepify/feature/checkout/data/models/order_model.dart';
 import 'package:stepify/feature/checkout/domain/entities/order.dart';
 
 
 abstract class OrderRemoteDataSource {
   Future<void> placeOrder(OrderEntity order);
+  /// Live stream of the current user’s orders (newest first)
+  Stream<List<OrderEntity>> watchMyOrders(String uid);
+  /// One-shot fetch (newest first)
+  Future<List<OrderEntity>> getMyOrdersOnce(String uid);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -25,6 +30,26 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       "createdAt": order.createdAt.toIso8601String(),
     });
     return docRef.id;
+  }
+
+  @override
+  Stream<List<OrderEntity>> watchMyOrders(String uid) {
+    return firestore
+        .collection("orders")
+        .where("userId", isEqualTo: uid)
+        .snapshots()
+        .map((snap) =>
+            snap.docs.map((d) => OrderModel.fromDoc(d)).toList());
+  }
+
+  @override
+  Future<List<OrderEntity>> getMyOrdersOnce(String uid) async {
+    final q = await firestore
+        .collection("orders")
+        .where("userId", isEqualTo: uid)
+        .orderBy("createdAt", descending: true)
+        .get();
+    return q.docs.map((d) => OrderModel.fromDoc(d)).toList();
   }
 }
 

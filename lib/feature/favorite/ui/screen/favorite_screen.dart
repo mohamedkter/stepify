@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/core/utils/widget/bag_widget.dart';
 import 'package:stepify/feature/favorite/domain/entities/favorite_item.dart';
@@ -22,7 +23,7 @@ class FavoriteScreen extends StatelessWidget {
           centerTitle: true,
           actions: const [BagWidget()],
           leading: IconButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.go("/main"),
             icon: Icon(
               Icons.arrow_back_ios_new_rounded,
               color: ColorsManager.textColor,
@@ -83,7 +84,7 @@ class FavoriteShoeCard extends StatelessWidget {
         children: [
           InkWell(
             onTap: () {
-              favoritesCubit.toggleFavorite(item); // ✅ تحكم بالمفضلة من الكيوبت
+              favoritesCubit.toggleFavorite(item); 
             },
             child: Align(
               alignment: Alignment.topLeft,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stepify/feature/search/ui/screen/search_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:stepify/core/routes/routes.dart';
 
 class SearchBarWidget extends StatelessWidget {
   const SearchBarWidget({super.key});
@@ -17,10 +18,8 @@ class SearchBarWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               child: GestureDetector(
                 onTap: () {
-                  print('Search bar tapped');
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const SearchScreen(),
-                  ));
+                  // Navigate to the search screen when the search bar is tapped
+                  context.push(Routes.search);
                 },
                 child: Container(
                   height: 52,
@@ -37,9 +36,10 @@ class SearchBarWidget extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Looking for shoes',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey[400],
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey[400],
+                                    ),
                           ),
                         ),
                       ],

@@ -57,14 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
       elevation: 0,
       surfaceTintColor: Colors.white,
       backgroundColor: ColorsManager.secondaryColor,
-      actions: [
-        GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => const CartScreen(),
-              ));
-            },
-            child: const BagWidget())
+      actions: const [
+        BagWidget(),
       ],
     );
   }
@@ -129,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+//01004650888
   /// ---------------- Offers Section ----------------
   Widget _buildOfferSection() {
     return Column(

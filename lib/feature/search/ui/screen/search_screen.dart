@@ -3,9 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/core/utils/widget/bag_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stepify/feature/home/ui/widgets/shoe_card.dart';
+
 
 class SearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -13,11 +11,11 @@ class SearchBar extends StatelessWidget {
   final VoidCallback onMicTap;
 
   const SearchBar({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onChanged,
     required this.onMicTap, required bool isListening,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +47,7 @@ class SearchBar extends StatelessWidget {
 class SearchChip extends StatelessWidget {
   final String label;
 
-  const SearchChip({Key? key, required this.label}) : super(key: key);
+  const SearchChip({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +73,7 @@ class SearchChip extends StatelessWidget {
 class SectionTitle extends StatelessWidget {
   final String title;
 
-  const SectionTitle({Key? key, required this.title}) : super(key: key);
+  const SectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -88,12 +86,6 @@ class SectionTitle extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
 
 
 class SearchScreen extends StatefulWidget {

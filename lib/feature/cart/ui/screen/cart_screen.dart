@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/core/utils/widget/custom_button.dart';
 import 'package:stepify/feature/cart/domain/entities/cart_item.dart';
@@ -90,15 +91,20 @@ class CartScreen extends StatelessWidget {
                   SizedBox(height: 20.h),
                   CustomButton(
                     text: "CheckOut",
-                    color: Theme.of(context).primaryColor,
+                    color: state is CartUpdated && state.items.isNotEmpty
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey[500], 
                     textColor: Colors.white,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const CheckoutScreen()),
-                      );
-                    },
+                    onPressed: state is CartUpdated && state.items.isNotEmpty
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const CheckoutScreen(),
+                              ),
+                            );
+                          }
+                        : null, // لو فاضي يتعطل
                   ),
                   SizedBox(height: 20.h),
                 ],
@@ -114,7 +120,7 @@ class CartScreen extends StatelessWidget {
         elevation: 0,
         surfaceTintColor: Colors.white,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(context),
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: ColorsManager.textColor,

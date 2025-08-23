@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stepify/core/themes/colors.dart';
+import 'package:stepify/core/utils/widget/custom_button.dart';
 import 'package:stepify/feature/cart/ui/cubit/cart_cubit.dart';
 import 'package:stepify/feature/cart/ui/cubit/cart_state.dart';
 import 'package:stepify/feature/checkout/domain/entities/order.dart';
 import 'package:stepify/feature/checkout/ui/cubit/order_cubit.dart';
 import 'package:stepify/feature/checkout/ui/cubit/order_state.dart';
 import 'package:go_router/go_router.dart';
+
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
 
@@ -34,8 +37,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(ctx).pop(); // Close popup
-                  ctx.go(
-                      "/home",
+                    context.go(
+                      "/main",
                     );
                   },
                   child: const Text("Go to Home"),
@@ -120,30 +123,34 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Place Order Button
-                    ElevatedButton(
+                    CustomButton(
                       onPressed: () {
-                        final uid = FirebaseAuth.instance.currentUser!.uid;
-                        final id =
-                            DateTime.now().millisecondsSinceEpoch.toString();
-                        final order = OrderEntity(
-                          id: id,
-                          userId: uid,
-                          items: items,
-                          totalPrice: total,
-                          status: "pending",
-                          paymentMethod: selectedPayment,
-                          address: addressController.text,
-                          createdAt: DateTime.now(),
-                        );
-
-                        context.read<OrderCubit>().placeOrder(order);
+                        if (addressController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Please enter your address."),
+                            ),
+                          );
+                          return;
+                        }
+                        context.read<OrderCubit>().placeOrder(
+                              OrderEntity(
+                                id: DateTime.now().toString(),
+                                userId: FirebaseAuth.instance.currentUser!.uid,
+                                items: items,
+                                totalPrice: total,
+                                status: "pending",
+                                paymentMethod: selectedPayment,
+                                address: addressController.text,
+                                createdAt: DateTime.now(),
+                              ),
+                            );
                       },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      child: const Text("Place Order"),
+                      text: "Place Order",
+                      color: ColorsManager.primaryColor,
+                      textColor: Colors.white,
                     ),
+                    // Place Order Button
                   ],
                 ),
               );

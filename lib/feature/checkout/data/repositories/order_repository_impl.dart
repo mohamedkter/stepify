@@ -11,4 +11,9 @@ class OrderRepositoryImpl implements OrderRepository {
   Future<void> placeOrder(OrderEntity order) {
     return remoteDataSource.placeOrder(order);
   }
+   @override
+  Stream<List<OrderEntity>> watchMyOrders(String uid) => remoteDataSource.watchMyOrders(uid);
+
+  @override
+  Future<List<OrderEntity>> getMyOrdersOnce(String uid) =>remoteDataSource.getMyOrdersOnce(uid);
 }

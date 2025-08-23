@@ -1,8 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stepify/feature/home/domain/entities/offer_entity.dart';
-
 
 class OfferSlider extends StatefulWidget {
   final List<OfferEntity> offers;
@@ -24,7 +24,10 @@ class _OfferSliderState extends State<OfferSlider> {
         children: [
           GestureDetector(
             onTap: () {
-              
+              context.push(
+                '/offerDetails',
+                extra: widget.offers[currentIndex],
+              );
             },
             child: CarouselSlider(
               items: widget.offers
@@ -64,11 +67,11 @@ class _OfferSliderState extends State<OfferSlider> {
                   child: DotsIndicator(
                     position: double.parse(currentIndex.toString()),
                     dotsCount: widget.offers.length,
-                    decorator:  DotsDecorator(
+                    decorator: DotsDecorator(
                         size: const Size.square(7.0),
                         activeSize: const Size(8.0, 8.0),
                         color: Colors.grey,
-                        activeColor:Theme.of(context).primaryColor),
+                        activeColor: Theme.of(context).primaryColor),
                   ),
                 ),
               ],

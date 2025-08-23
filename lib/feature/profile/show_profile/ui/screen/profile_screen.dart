@@ -1,6 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stepify/core/themes/colors.dart';
+import 'package:stepify/feature/checkout/data/datasource/order_remote_datasource.dart';
+import 'package:stepify/feature/checkout/data/repositories/order_repository_impl.dart';
+import 'package:stepify/feature/checkout/ui/cubit/my_orders_cubit.dart';
+import 'package:stepify/feature/checkout/ui/screens/my_orders_screen.dart';
 import 'package:stepify/feature/profile/edit_profile/ui/screen/edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -72,7 +79,7 @@ class ProfileBody extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView(
-        children: const [
+        children: [
           ProfileHeader(),
           SizedBox(height: 20),
           ProfileDataField(
@@ -101,6 +108,33 @@ class ProfileBody extends StatelessWidget {
             value: "123 Main Street, Cairo",
             hintText: "Enter your address",
             showCheckIcon: false,
+          ),
+          SizedBox(height: 10),
+          //My Orders Section
+          ListTile(
+            title: Text(
+              "My Orders",
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            trailing:
+                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            onTap: () {
+                
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => BlocProvider<MyOrdersCubit>(
+              create: (_) {
+                final uid = FirebaseAuth.instance.currentUser!.uid;
+                final remote =
+                    OrderRemoteDataSourceImpl(FirebaseFirestore.instance);
+                final repo = OrderRepositoryImpl(remote);
+                return MyOrdersCubit(repo: repo, uid: uid);
+              },
+              child: const MyOrdersScreen(),
+            )),
+              );
+            },
           ),
         ],
       ),
