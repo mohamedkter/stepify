@@ -9,6 +9,7 @@ import 'package:stepify/feature/checkout/domain/entities/order.dart';
 import 'package:stepify/feature/checkout/ui/cubit/order_cubit.dart';
 import 'package:stepify/feature/checkout/ui/cubit/order_state.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stepify/feature/checkout/ui/screens/pick_location_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -69,12 +70,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     const Text("Delivery Address",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    TextField(
-                      controller: addressController,
-                      decoration: const InputDecoration(
-                        hintText: "Enter your address",
-                        border: OutlineInputBorder(),
-                      ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const PickLocationScreen()),
+                        );
+
+                        if (result != null) {
+                          print("Selected Address: ${result['address']}");
+                          print(
+                              "Latitude: ${result['lat']}, Longitude: ${result['lng']}");
+                          // Save to order model
+                          addressController.text = result['address'] ?? '';
+                        }
+                      },
+                      child: const Text("Select Order Location"),
                     ),
                     const SizedBox(height: 20),
 

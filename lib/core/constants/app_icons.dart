@@ -16,6 +16,7 @@ class AppIcons {
   static const String cart = '$_dir/bag-4.svg';
   static const String bag = '$_dir/bag-smile.svg';
   static const String heart = '$_dir/heart.svg';
+  static const String clipboardHeart ='$_dir/clipboard-heart.svg';
   static const String user = '$_dir/user-rounded.svg';
   static const String arrowLeft = '$_dir/arrow-lef.svg';
   static const String arrowRight = '$_dir/arrow-right.svg';

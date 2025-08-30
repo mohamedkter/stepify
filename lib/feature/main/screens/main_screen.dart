@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stepify/core/constants/app_icons.dart';
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/feature/cart/ui/cubit/cart_cubit.dart';
 import 'package:stepify/feature/cart/ui/screen/cart_screen.dart';
@@ -44,13 +45,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   late Animation<double> fabAnimation;
   late Animation<double> borderRadiusAnimation;
 
-  final _iconList = const <IconData>[
-    Icons.home_filled,
-    Icons.favorite,
-    Icons.notifications,
-    Icons.person,
+  final _iconList = <String>[
+    AppIcons.home,
+    AppIcons.heart,
+    AppIcons.bell,
+    AppIcons.user,
   ];
-
   final _titleList = const <String>[
     "Home",
     "Favorite",
@@ -111,12 +111,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   OfferRemoteDataSourceImpl(FirebaseFirestore.instance))))
                 ..fetchOffers(),
             ),
-          
           ],
           child: const HomeScreen(),
         ),
         const FavoriteScreen(),
-        const NotificationScreen(),
+         NotificationScreen(),
         const ProfileScreen(),
       ];
 
@@ -146,15 +145,26 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         shape: const CircleBorder(),
         backgroundColor: ColorsManager.primaryColor,
         onPressed: _onFabPressed,
-        child: const Icon(Icons.shopping_bag_outlined,
-            size: 30, color: Colors.white),
+        child: AppIcons.svg(
+          AppIcons.bag,
+          size: 30,
+          color: Colors.white,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
         itemCount: _iconList.length,
         tabBuilder: (int index, bool isActive) {
           final color = isActive ? ColorsManager.primaryColor : Colors.grey;
-          return Icon(_iconList[index], size: 24, color: color);
+          return Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: AppIcons.svg(
+              _iconList[index],
+              height: 15,
+              width: 15,
+              color: color,
+            ),
+          );
         },
         backgroundColor: Colors.white,
         activeIndex: _bottomNavIndex,

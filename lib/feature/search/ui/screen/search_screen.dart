@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+//import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:stepify/core/themes/colors.dart';
 import 'package:stepify/core/utils/widget/bag_widget.dart';
 
@@ -128,72 +128,72 @@ class _SearchScreenState extends State<SearchScreen> {
   ];
 
   // Speech-to-text controller
-  late stt.SpeechToText _speech;
+  // late stt.SpeechToText _speech;
   bool _isListening = false;
   String _micStatusText = "Tap the mic to start speaking";
 
-  @override
-  void initState() {
-    super.initState();
-    _speech = stt.SpeechToText();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _speech = stt.SpeechToText();
+  // }
 
-  void _onMicTap() async {
-    if (!_isListening) {
-      bool available = await _speech.initialize();
-      if (available) {
-        setState(() {
-          _isListening = true;
-          _micStatusText = "Listening... speak now!";
-        });
-        _showListeningPopup(); // Show the popup
-        _speech.listen(
-          localeId: 'en_US',
-          onResult: (result) {
-          setState(() {
-            _searchController.text = result.recognizedWords;
-          });
-        });
-      }
-    } else {
-      _speech.stop();
-      setState(() {
-        _isListening = false;
-        _micStatusText = "Tap the mic to start speaking";
-      });
-    }
-  }
+  // void _onMicTap() async {
+  //   if (!_isListening) {
+  //     bool available = await _speech.initialize();
+  //     if (available) {
+  //       setState(() {
+  //         _isListening = true;
+  //         _micStatusText = "Listening... speak now!";
+  //       });
+  //       _showListeningPopup(); // Show the popup
+  //       _speech.listen(
+  //         localeId: 'en_US',
+  //         onResult: (result) {
+  //         setState(() {
+  //           _searchController.text = result.recognizedWords;
+  //         });
+  //       });
+  //     }
+  //   } else {
+  //     _speech.stop();
+  //     setState(() {
+  //       _isListening = false;
+  //       _micStatusText = "Tap the mic to start speaking";
+  //     });
+  //   }
+  // }
 
-  void _showListeningPopup() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent closing the popup by tapping outside
-      builder: (BuildContext context) {
-        return const Dialog(
-          backgroundColor: Colors.transparent,
-          child: Center(
-            child: AnimatedWave(),
-          ),
-        );
-      },
-    );
+  // void _showListeningPopup() {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false, // Prevent closing the popup by tapping outside
+  //     builder: (BuildContext context) {
+  //       return const Dialog(
+  //         backgroundColor: Colors.transparent,
+  //         child: Center(
+  //           child: AnimatedWave(),
+  //         ),
+  //       );
+  //     },
+  //   );
 
-    // Close the popup after 5 seconds
-    Future.delayed(const Duration(seconds: 5), () {
-      Navigator.of(context).pop();
-      _speech.stop();
-      setState(() {
-        _isListening = false;
-        _micStatusText = "Tap the mic to start speaking";
-      });
-    });
-  }
+  //   // Close the popup after 5 seconds
+  //   Future.delayed(const Duration(seconds: 5), () {
+  //     Navigator.of(context).pop();
+  //     _speech.stop();
+  //     setState(() {
+  //       _isListening = false;
+  //       _micStatusText = "Tap the mic to start speaking";
+  //     });
+  //   });
+  // }
 
-  @override
-  void dispose() {
-    _speech.stop();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _speech.stop();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +239,7 @@ class _SearchScreenState extends State<SearchScreen> {
               onChanged: (value) {
                 // Implement search logic
               },
-              onMicTap: _onMicTap, // Pass the mic tap handler
+              onMicTap: (){}, // Pass the mic tap handler
               isListening: _isListening,
             ),
             SizedBox(height: 10.h),
