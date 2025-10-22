@@ -7,13 +7,12 @@
 - 🔐 User Authentication (Login/Register with Firebase)
 - 🏠 Home Screen with Categories & Featured Sneakers
 - 🔍 Search Functionality
-- 🛒 Add to Cart & Checkout Flow (coming soon)
+- 🛒 Add to Cart & Checkout Flow 
 - 📦 Product Details with multiple images, sizes, colors
-- 🧾 Order History (planned)
+- 🧾 Order History 
 - 🧑‍💼 User Profile Management
 - ☁️ Cloudinary Image Hosting
-- 📊 Rating System
-- 🌐 Multi-language Support
+- 🌐 Multi-language Support  (coming soon)
 - 🔔 Real-time Notifications (planned)
 
 ## 🛠️ Tech Stack
